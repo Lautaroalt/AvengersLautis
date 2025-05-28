@@ -4,7 +4,7 @@ const mysql = require('mysql2');
 const app = express();
 const port = 3001;
 
-// Configuración de la base de datos
+
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -12,7 +12,7 @@ const db = mysql.createConnection({
   database: 'ventas_avengers'
 });
 
-// Conexión a la base de datos
+
 db.connect(err => {
   if (err) {
     console.error('Error al conectar a la base de datos:', err);
@@ -21,15 +21,14 @@ db.connect(err => {
   console.log('Conectado a MySQL');
 });
 
-// Middleware para parsear JSON
 app.use(express.json());
 
-// Ruta de prueba
+a
 app.get('/', (req, res) => {
   res.send('¡Servidor backend en funcionamiento!');
 });
 
-// Ruta para obtener ventas
+
 app.get('/ventas', (req, res) => {
   db.query('SELECT * FROM ventas', (err, results) => {
     if (err) {
@@ -40,7 +39,7 @@ app.get('/ventas', (req, res) => {
   });
 });
 
-// Ruta para registrar una venta
+
 app.post('/ventas', (req, res) => {
   const { vendedor, producto, cantidad, fecha } = req.body;
   const query = 'INSERT INTO ventas (vendedor, producto, cantidad, fecha) VALUES (?, ?, ?, ?)';

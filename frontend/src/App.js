@@ -1,6 +1,6 @@
 import React from "react";
 import RegistroVenta from "./components/RegistroVenta";
-import fondo from "./assets/fondo.jpg"; // Asegurate que la imagen esté en /src/assets/
+import fondo from "./assets/fondo.jpg";
 
 function App() {
   return (
@@ -21,7 +21,7 @@ function App() {
     >
       <h1 style={{ color: "white", marginBottom: "5px" }}>Gestión de Ventas Avengers</h1>
       <RegistroVenta />
-    </div>
+    </div>  
   );
 }
 

@@ -4,7 +4,7 @@ import { avengers } from "../data/avengers";
 function RegistroVenta() {
   const [vendedor, setVendedor] = useState("");
   const [productos, setProductos] = useState([{ nombre: "", cantidad: 1, precio: 0 }]);
-  const [descuento, setDescuento] = useState(0);  // nuevo estado descuento
+  const [descuento, setDescuento] = useState(0);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [ventas, setVentas] = useState([]);
@@ -44,7 +44,7 @@ function RegistroVenta() {
     setTotal(totalConDesc);
   };
 
-  // Recalcula el total
+  
   useEffect(() => {
     calcularTotal(productos, descuento);
   }, [descuento]);
@@ -165,7 +165,7 @@ function RegistroVenta() {
         </button>
       </form>
 
-      {/* Listado de ventas simuladas */}
+      {}
       {ventas.length > 0 && (
         <div style={{ maxWidth: 600, margin: "20px auto", background: "white", padding: 20, borderRadius: 10, boxShadow: "0 0 10px rgba(0,0,0,0.1)" }}>
           <h3>Ventas registradas</h3>

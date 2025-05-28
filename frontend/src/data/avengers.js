@@ -2,31 +2,31 @@ export const avengers = [
   {
     nombre: "Tony Stark",
     alias: "Iron Man",
-    habilidades: ["genio", "millonario", "experto en tecnología", "traje blindado"],
+    habilidades: ["Filantropo", "Multimillonario", "Tecnologico", "Armadura de hierro"],
     actor: "Robert Downey Jr."
   },
   {
     nombre: "Steve Rogers",
     alias: "Captain America",
-    habilidades: ["fuerza sobrehumana", "liderazgo", "uso de escudo"],
+    habilidades: ["Super musculoso", "Capitan", "Escudo de vibranium"],
     actor: "Chris Evans"
   },
   {
     nombre: "Thor",
     alias: "Thor",
-    habilidades: ["dios del trueno", "control del rayo", "fuerza sobrehumana", "Mjolnir"],
+    habilidades: ["dios del trueno",  "fuerza sobrehumana", "Martillo"],
     actor: "Chris Hemsworth"
   },
   {
     nombre: "Bruce Banner",
     alias: "Hulk",
-    habilidades: ["fuerza extrema", "resistencia", "cambio de forma al enojarse"],
+    habilidades: ["fuerza bruta", "resistencia", "cambio de forma al enojarse"],
     actor: "Mark Ruffalo"
   },
   {
     nombre: "Natasha Romanoff",
     alias: "Black Widow",
-    habilidades: ["espionaje", "combate cuerpo a cuerpo", "armas de fuego"],
+    habilidades: ["espia", "combate cuerpo a cuerpo", "armas de fuego"],
     actor: "Scarlett Johansson"
   },
   {
@@ -38,7 +38,7 @@ export const avengers = [
   {
     nombre: "Wanda Maximoff",
     alias: "Scarlet Witch",
-    habilidades: ["telequinesis", "manipulación de energía", "magia del caos"],
+    habilidades: ["telequinesis", "manipulación de energía", "magia "],
     actor: "Elizabeth Olsen"
   },
   {
@@ -50,7 +50,7 @@ export const avengers = [
   {
     nombre: "Peter Parker",
     alias: "Spider-Man",
-    habilidades: ["sentido arácnido", "agilidad", "lanzar telarañas", "escalar paredes"],
+    habilidades: ["sentido aracnido", 'Agil', "lanzar telarañas", "escalar paredes"],
     actor: "Tom Holland"
   }
 ];
