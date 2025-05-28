@@ -1,17 +1,18 @@
 const express = require('express');
 const mysql = require('mysql2');
+const cors = require('cors');  // <--- agregar esto
 
 const app = express();
 const port = 3001;
 
+app.use(cors());  // <--- agregar esto para habilitar CORS
 
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'tu_contraseña',
+  password: 'xxzza',
   database: 'ventas_avengers'
 });
-
 
 db.connect(err => {
   if (err) {
@@ -23,11 +24,9 @@ db.connect(err => {
 
 app.use(express.json());
 
-a
 app.get('/', (req, res) => {
   res.send('¡Servidor backend en funcionamiento!');
 });
-
 
 app.get('/ventas', (req, res) => {
   db.query('SELECT * FROM ventas', (err, results) => {
@@ -38,7 +37,6 @@ app.get('/ventas', (req, res) => {
     res.json(results);
   });
 });
-
 
 app.post('/ventas', (req, res) => {
   const { vendedor, producto, cantidad, fecha } = req.body;
@@ -52,7 +50,6 @@ app.post('/ventas', (req, res) => {
   });
 });
 
-// Iniciar el servidor
 app.listen(port, () => {
   console.log(`Servidor backend corriendo en http://localhost:${port}`);
 });

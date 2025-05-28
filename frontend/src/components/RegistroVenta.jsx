@@ -9,14 +9,13 @@ function RegistroVenta() {
   const [loading, setLoading] = useState(false);
   const [ventas, setVentas] = useState([]);
 
+  // Traer ventas desde backend al montar componente
   useEffect(() => {
-    const stored = localStorage.getItem("ventas");
-    if (stored) setVentas(JSON.parse(stored));
+    fetch("http://localhost:3001/ventas")
+      .then((res) => res.json())
+      .then((data) => setVentas(data))
+      .catch(() => alert("Error al cargar las ventas desde el servidor"));
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem("ventas", JSON.stringify(ventas));
-  }, [ventas]);
 
   const handleProductoChange = (index, field, value) => {
     const nuevosProductos = [...productos];
@@ -44,7 +43,6 @@ function RegistroVenta() {
     setTotal(totalConDesc);
   };
 
-  
   useEffect(() => {
     calcularTotal(productos, descuento);
   }, [descuento]);
@@ -52,7 +50,6 @@ function RegistroVenta() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    
     if (!vendedor) {
       alert("Selecciona un vendedor");
       return;
@@ -64,33 +61,60 @@ function RegistroVenta() {
 
     setLoading(true);
 
-    
-    setTimeout(() => {
-      const venta = {
-        vendedor,
-        productos,
-        descuento,
-        total,
-        fecha: new Date().toISOString(),
-      };
-      setVentas([...ventas, venta]);
-      alert("Venta registrada correctamente");
-      setVendedor("");
-      setProductos([{ nombre: "", cantidad: 1, precio: 0 }]);
-      setDescuento(0);
-      setLoading(false);
-    }, 1500);
+    // Armar objeto venta para enviar al backend
+    const venta = {
+      vendedor,
+      producto: JSON.stringify(productos), // Guardamos productos como JSON string
+      cantidad: productos.reduce((acc, p) => acc + p.cantidad, 0), // suma total de cantidades
+      fecha: new Date().toISOString(),
+    };
+
+    fetch("http://localhost:3001/ventas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(venta),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error al registrar venta");
+        return res.json();
+      })
+      .then(() => {
+        alert("Venta registrada correctamente");
+        setVentas([...ventas, { ...venta, total }]);
+        setVendedor("");
+        setProductos([{ nombre: "", cantidad: 1, precio: 0 }]);
+        setDescuento(0);
+        setLoading(false);
+      })
+      .catch(() => {
+        alert("Error al registrar la venta");
+        setLoading(false);
+      });
   };
 
   const avengerSeleccionado = avengers.find(a => a.nombre === vendedor);
 
   return (
     <>
-      <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "auto", background: "white", padding: 20, borderRadius: 10, boxShadow: "0 0 10px rgba(0,0,0,0.1)" }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          maxWidth: 600,
+          margin: "auto",
+          background: "white",
+          padding: 20,
+          borderRadius: 10,
+          boxShadow: "0 0 10px rgba(0,0,0,0.1)"
+        }}
+      >
         <h2>Registrar Venta</h2>
 
         <label>Vendedor (Avenger):</label>
-        <select value={vendedor} onChange={(e) => setVendedor(e.target.value)} required>
+        <select
+          value={vendedor}
+          onChange={(e) => setVendedor(e.target.value)}
+          required
+        >
           <option value="">Seleccionar</option>
           {avengers.map((a, i) => (
             <option key={i} value={a.nombre}>
@@ -99,23 +123,47 @@ function RegistroVenta() {
           ))}
         </select>
 
-        {}
         {avengerSeleccionado && (
-          <div style={{ margin: "10px 0", padding: 10, border: "1px solid #ccc", borderRadius: 6, background: "#f9f9f9" }}>
-            <h4>{avengerSeleccionado.alias} ({avengerSeleccionado.nombre})</h4>
-            <p><strong>Habilidades:</strong> {avengerSeleccionado.habilidades.join(", ")}</p>
-            <p><strong>Actor:</strong> {avengerSeleccionado.actor}</p>
+          <div
+            style={{
+              margin: "10px 0",
+              padding: 10,
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              background: "#f9f9f9"
+            }}
+          >
+            <h4>
+              {avengerSeleccionado.alias} ({avengerSeleccionado.nombre})
+            </h4>
+            <p>
+              <strong>Habilidades:</strong>{" "}
+              {avengerSeleccionado.habilidades.join(", ")}
+            </p>
+            <p>
+              <strong>Actor:</strong> {avengerSeleccionado.actor}
+            </p>
           </div>
         )}
 
         <h3>Productos:</h3>
         {productos.map((prod, i) => (
-          <div key={i} style={{ marginBottom: "10px", display: "flex", gap: 10, alignItems: "center" }}>
+          <div
+            key={i}
+            style={{
+              marginBottom: "10px",
+              display: "flex",
+              gap: 10,
+              alignItems: "center"
+            }}
+          >
             <input
               type="text"
               placeholder="Nombre del producto"
               value={prod.nombre}
-              onChange={(e) => handleProductoChange(i, "nombre", e.target.value)}
+              onChange={(e) =>
+                handleProductoChange(i, "nombre", e.target.value)
+              }
               required
               style={{ flex: 3 }}
             />
@@ -124,7 +172,9 @@ function RegistroVenta() {
               placeholder="Cantidad"
               min="1"
               value={prod.cantidad}
-              onChange={(e) => handleProductoChange(i, "cantidad", e.target.value)}
+              onChange={(e) =>
+                handleProductoChange(i, "cantidad", e.target.value)
+              }
               required
               style={{ flex: 1 }}
             />
@@ -134,17 +184,35 @@ function RegistroVenta() {
               min="0"
               step="0.01"
               value={prod.precio}
-              onChange={(e) => handleProductoChange(i, "precio", e.target.value)}
+              onChange={(e) =>
+                handleProductoChange(i, "precio", e.target.value)
+              }
               required
               style={{ flex: 1 }}
             />
-            <button type="button" onClick={() => eliminarProducto(i)} style={{ flex: "0 0 auto", backgroundColor: "#e63946", color: "white", border: "none", borderRadius: 6, padding: "6px 12px", cursor: "pointer" }}>
+            <button
+              type="button"
+              onClick={() => eliminarProducto(i)}
+              style={{
+                flex: "0 0 auto",
+                backgroundColor: "#e63946",
+                color: "white",
+                border: "none",
+                borderRadius: 6,
+                padding: "6px 12px",
+                cursor: "pointer"
+              }}
+            >
               X
             </button>
           </div>
         ))}
 
-        <button type="button" onClick={agregarProducto} style={{ marginBottom: 10 }}>
+        <button
+          type="button"
+          onClick={agregarProducto}
+          style={{ marginBottom: 10 }}
+        >
           Agregar otro producto
         </button>
 
@@ -158,32 +226,76 @@ function RegistroVenta() {
           style={{ width: "100%", marginBottom: 10 }}
         />
 
-        <p><strong>Total:</strong> ${total.toFixed(2)}</p>
+        <p>
+          <strong>Total:</strong> ${total.toFixed(2)}
+        </p>
 
-        <button type="submit" disabled={loading} style={{ padding: "10px", backgroundColor: "#0070f3", color: "white", border: "none", borderRadius: 6, cursor: "pointer" }}>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            padding: "10px",
+            backgroundColor: "#0070f3",
+            color: "white",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer"
+          }}
+        >
           {loading ? "Registrando..." : "Registrar Venta"}
         </button>
       </form>
 
-      {}
       {ventas.length > 0 && (
-        <div style={{ maxWidth: 600, margin: "20px auto", background: "white", padding: 20, borderRadius: 10, boxShadow: "0 0 10px rgba(0,0,0,0.1)" }}>
+        <div
+          style={{
+            maxWidth: 600,
+            margin: "20px auto",
+            background: "white",
+            padding: 20,
+            borderRadius: 10,
+            boxShadow: "0 0 10px rgba(0,0,0,0.1)"
+          }}
+        >
           <h3>Ventas registradas</h3>
           <ul style={{ listStyle: "none", padding: 0 }}>
-            {ventas.map((v, i) => (
-              <li key={i} style={{ marginBottom: 15, borderBottom: "1px solid #ddd", paddingBottom: 10 }}>
-                <p><strong>Vendedor:</strong> {v.vendedor}</p>
-                <p><strong>Productos:</strong></p>
-                <ul>
-                  {v.productos.map((p, idx) => (
-                    <li key={idx}>{p.nombre} - Cantidad: {p.cantidad} - Precio: ${p.precio.toFixed(2)}</li>
-                  ))}
-                </ul>
-                <p><strong>Descuento:</strong> {v.descuento}%</p>
-                <p><strong>Total:</strong> ${v.total.toFixed(2)}</p>
-                <p><small>Fecha: {new Date(v.fecha).toLocaleString()}</small></p>
-              </li>
-            ))}
+            {ventas.map((v, i) => {
+              const productosVenta = JSON.parse(v.producto || "[]");
+              return (
+                <li
+                  key={i}
+                  style={{
+                    marginBottom: 15,
+                    borderBottom: "1px solid #ddd",
+                    paddingBottom: 10
+                  }}
+                >
+                  <p>
+                    <strong>Vendedor:</strong> {v.vendedor}
+                  </p>
+                  <p>
+                    <strong>Productos:</strong>
+                  </p>
+                  <ul>
+                    {productosVenta.map((p, idx) => (
+                      <li key={idx}>
+                        {p.nombre} - Cantidad: {p.cantidad} - Precio: $
+                        {p.precio.toFixed(2)}
+                      </li>
+                    ))}
+                  </ul>
+                  <p>
+                    <strong>Total:</strong> $
+                    {v.total ? v.total.toFixed(2) : total.toFixed(2)}
+                  </p>
+                  <p>
+                    <small>
+                      Fecha: {new Date(v.fecha).toLocaleString()}
+                    </small>
+                  </p>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}
